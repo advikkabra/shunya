@@ -3,7 +3,7 @@
   "description": "The Carbon Tracking Extension",
   "version": "1.0",
   "manifest_version": 3,
-  "browser_action": {
+  "action": {
     "default_popup": "index.html",
     "default_title": "Find your emissions"
   },
@@ -14,8 +14,8 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://flight.easemytrip.com/Review/Checkout?*"],
-      "js": ["../ext/flights.js"]
+      "matches": ["*://flight.easemytrip.com/*"],
+      "js": ["flights.js"]
     }
   ]
 }
