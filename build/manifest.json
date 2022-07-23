@@ -1,0 +1,21 @@
+{
+  "name": "Shunya",
+  "description": "The Carbon Tracking Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Find your emissions"
+  },
+  "icons": {
+    "16": "logo192.png",
+    "48": "logo192.png",
+    "128": "logo192.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://flight.easemytrip.com/*"],
+      "js": ["flights.js"]
+    }
+  ]
+}
