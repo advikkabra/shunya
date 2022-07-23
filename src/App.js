@@ -32,6 +32,14 @@ function App() {
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
 
+  const [target, setTarget] = useState(100);
+  const [monthly, setMonthly] = useState(20);
+  const [added, setAdded] = useState(5);
+
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   useEffect(() => {
     auth.onAuthStateChanged(function(user) {
       if (user) {
@@ -102,7 +110,7 @@ function App() {
       </Center>
       <VStack pt={2} mb="4">
       <Text style={{marginTop: "45px", position: "absolute"}} fontWeight="bold" fontSize={"4xl"}>
-        40
+        {monthly}
       </Text>
       <Text style={{marginTop: "95px", position: "absolute"}} fontWeight="medium" fontSize="sm">
         CO₂e
@@ -114,7 +122,7 @@ function App() {
           datasets: [
             {
               label: '# of Votes',
-              data: [30, 10, 60],
+              data: monthly + added >= target ? [0, target, 0]: [monthly, added, target - monthly - added],
               backgroundColor: [
                 '#38B2AC',
                 '#F56565',
@@ -130,13 +138,15 @@ function App() {
             },
           ],
         }} /></Box>
-        {/* <CircularProgress style={{cursor: "default"}} value={40} thickness="7px" size="150px" color="teal.500"> */}
-        {/*   <CircularProgressLabel> */}
-        {/*      */}
-        {/*   </CircularProgressLabel> */}
-        {/* </CircularProgress> */}
+        
 
-        <Heading fontSize="xl">July 2022</Heading>
+        <Heading fontSize="xl">{monthNames[(new Date()).getMonth()]} {(new Date()).getFullYear()}</Heading>
+        {monthly + added >= target && (<Text color="red.500" fontWeight="medium" fontSize="lg">
+          Limit exceeded
+        </Text>)}
+        {added > 0 && (<Text color="red.500" fontWeight="medium" fontSize="lg">
+          +{added} CO₂e from purchase
+        </Text>)}
       </VStack>
       <Center pt={2} >
         <HStack mb="16">
