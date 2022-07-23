@@ -23,8 +23,29 @@ if (document.location.href.search("amazon.in") !== -1) {
 
     let data = JSON.parse(sessionStorage.getItem("Shunya"));
 
+    let payload = { items: [] };
     for (let i = prices.length - 1; i >= 0; i--) {
-      console.log(data[i], parseFloat(prices[prices.length - 1 - i].outerText));
+      payload["items"].push({
+        category: data[i]["category"],
+        title: data[i]["title"],
+        price: parseFloat(
+          prices[prices.length - 1 - i].outerText.replace(",", "")
+        ),
+      });
     }
+    fetch("http://localhost:5000/api/shopping/data", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        const checkout = document.querySelector(
+          "[data-feature-id='proceed-to-checkout-label']"
+        );
+        checkout.outerText = `Checkout - Emissions: ${Math.floor(
+          res["emissions"]
+        )} kg`;
+      });
   }
 }
