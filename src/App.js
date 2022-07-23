@@ -18,7 +18,10 @@ import {
 import React, {useState, useEffect} from 'react';
 import { GoogleIcon } from './ProviderIcons'
 import { getAuth, setPersistence, signInWithEmailAndPassword, browserLocalPersistence } from "firebase/auth";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 
+ChartJS.register(ArcElement, Tooltip, Legend);
 function App() {
 
   const auth = getAuth();
@@ -28,6 +31,14 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+
+  const [target, setTarget] = useState(100);
+  const [monthly, setMonthly] = useState(20);
+  const [added, setAdded] = useState(5);
+
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   useEffect(() => {
     auth.onAuthStateChanged(function(user) {
@@ -81,7 +92,7 @@ function App() {
     <>
 
      {loading && (
-       <Center pt={2} pb="4" mt="4">
+       <Center pt={2} pb="4" mt="12">
 
         <Spinner
           thickness='3px'
@@ -94,24 +105,51 @@ function App() {
       )}
      {!loading && loggedIn && (
       <>
-      <Center pt={2} pb="4" mt="4">
-        <Image h='8' objectFit='cover' src='./logo.png' alt='Shunya' />
+      <Center pt={2} pb="4" mt="12">
+        <Image h='7' objectFit='cover' src='./logo.png' alt='Shunya' />
       </Center>
       <VStack pt={2} mb="4">
-        <CircularProgress style={{cursor: "default"}} value={40} size="150px" color="teal.500">
-          <CircularProgressLabel>
-            <Text fontWeight="bold" fontSize={"4xl"}>
-              40
-            </Text>
-            <Text fontWeight="medium" fontSize="sm">
-              CO₂e
-            </Text>
-          </CircularProgressLabel>
-        </CircularProgress>
-        <Heading fontSize="xl">July 2022</Heading>
+      <Text style={{marginTop: "45px", position: "absolute"}} fontWeight="bold" fontSize={"4xl"}>
+        {monthly}
+      </Text>
+      <Text style={{marginTop: "95px", position: "absolute"}} fontWeight="medium" fontSize="sm">
+        CO₂e
+      </Text>
+      <Box w="150px">
+      <Doughnut options={{responsive: true, plugins: {tooltip: {enabled: false}, legend: { display: false}}, cutout: "80%" }}
+        data={{
+          labels: ['', '', '', ],
+          datasets: [
+            {
+              label: '# of Votes',
+              data: monthly + added >= target ? [0, target, 0]: [monthly, added, target - monthly - added],
+              backgroundColor: [
+                '#38B2AC',
+                '#F56565',
+                '#EDF2F7',
+              ],
+              hoverBackgroundColor: [
+                '#38B2AC',
+                '#F56565',
+                '#EDF2F7',
+              ],
+              borderWidth: 0
+              
+            },
+          ],
+        }} /></Box>
+        
+
+        <Heading fontSize="xl">{monthNames[(new Date()).getMonth()]} {(new Date()).getFullYear()}</Heading>
+        {monthly + added >= target && (<Text color="red.500" fontWeight="medium" fontSize="lg">
+          Limit exceeded
+        </Text>)}
+        {added > 0 && (<Text color="red.500" fontWeight="medium" fontSize="lg">
+          +{added} CO₂e from purchase
+        </Text>)}
       </VStack>
       <Center pt={2} >
-        <HStack mb="5">
+        <HStack mb="16">
           <Button size="sm">Visit dashboard</Button>
           <Button size="sm" colorScheme="teal" variant='outline' onClick={onLogout}>Log out</Button>
 
@@ -121,8 +159,8 @@ function App() {
       )}
      {!loading && !loggedIn && (
       <>
-      <Center pt={2} pb="4" mt="4">
-        <Image h='8' objectFit='cover' src='./logo.png' alt='Shunya' />
+      <Center pt={2} pb="4" mt="12">
+        <Image h='7' objectFit='cover' src='./logo.png' alt='Shunya' />
       </Center>
       <VStack pt="4" mb="4">
         
@@ -133,7 +171,7 @@ function App() {
             
       </VStack>
       <Center pt={2} >
-        <VStack mb="5">
+        <VStack mb="16">
           
         <Input placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} size="sm"/>
         <Input placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} type="password" size="sm"/>
@@ -158,7 +196,9 @@ function App() {
         
 
         </VStack>
+
       </Center>
+
       </>
       )}
       

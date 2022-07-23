@@ -1,11 +1,11 @@
 {
   "name": "Shunya",
-  "description": "The Carbon Tracking Extension",
+  "description": "Shunya incentivizes climate conscious consumer decisions by tracking the carbon emissions of your online purchases in real-time.",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_title": "Find your emissions"
+    "default_title": "Track your emissions"
   },
   "icons": {
     "16": "logo192.png",
