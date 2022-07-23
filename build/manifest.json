@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_title": "Track your emissions"
+    "default_title": "Find your emissions"
   },
   "icons": {
     "16": "logo192.png",

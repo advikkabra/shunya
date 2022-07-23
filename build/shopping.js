@@ -47,15 +47,5 @@ if (document.location.href.search("amazon.in") !== -1) {
           res["emissions"]
         )} kg`;
       });
-
-    const checkout = document.querySelector('[name="proceedToRetailCheckout"]');
-
-    checkout.addEventListener("click", (_) => {
-      fetch("http://localhost:5000/api/shopping", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-      });
-    });
   }
 }

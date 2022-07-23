@@ -9,6 +9,20 @@ API_KEY = "JRF4976WPEMBF0N3JE8MNQGHYC1X"
 headers = {"Authorization": f"Bearer: {API_KEY}" }
 estimate = 'https://beta3.api.climatiq.io/estimate'
 
+def get_goods_estimate(item, act_id):
+    payload = {
+        "emission_factor": {
+            "activity_id": f"{act_id}"
+        },
+        "parameters": {
+            "money": item["price"] // 80,
+            "money_unit": "eur"
+        }
+    }
+    response = requests.post(estimate, json=payload, headers=headers).json()
+    return response
+
+
 @app.route('/')
 def home():
     return "<title>Welcome to the Shunya API</title>"
@@ -36,42 +50,29 @@ def shopping_data():
         total = 0
         for item in data["items"]:
             if item["category"] == "Shoes & Handbags":
-                payload = {
-                    "emission_factor": {
-                        "activity_id": "consumer_goods-type_leather_leather_products"
-                    },
-                    "parameters": {
-                        "money": item["price"] // 80,
-                        "money_unit": "eur"
-                    }
-                }
-                response = requests.post(estimate, json=payload, headers=headers).json()
+                response = get_goods_estimate(item, "consumer_goods-type_leather_leather_products")
                 total += response["co2e"]
             if item["category"] == "Clothing & Accessories":
-                payload = {
-                    "emission_factor": {
-                        "activity_id": "consumer_goods-type_clothing"
-                    },
-                    "parameters": {
-                        "money": item["price"] // 80,
-                        "money_unit": "eur"
-                    }
-                }
-                response = requests.post(estimate, json=payload, headers=headers).json()
+                response = get_goods_estimate(item, "consumer_goods-type_clothing")
                 total += response["co2e"]
             if item["category"] == "Computers & Accessories":
-                payload = {
-                    "emission_factor": {
-                        "activity_id": "electronics-type_computers"
-                    },
-                    "parameters": {
-                        "money": item["price"] // 80,
-                        "money_unit": "eur"
-                    }
-                }
-                response = requests.post(estimate, json=payload, headers=headers).json()
+                response = get_goods_estimate(item, "electronics-type_computers")
                 total += response["co2e"]
             return jsonify({"emissions": total})
+
+@app.route('/api/shopping', methods=["POST"])
+def shopping():
+    if request.method == "POST":
+        data = request.get_json()
+
+        for item in data["items"]:
+            if item["category"] == "Shoes & Handbags":
+                pass
+            if item["category"] == "Clothing & Accessories":
+                pass
+            if item["category"] == "Computers & Accessories":
+                pass
+
 
 if __name__ == '__main__':
     app.run(debug=True)
