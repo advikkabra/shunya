@@ -14,8 +14,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://flight.easemytrip.com/*"],
-      "js": ["flights.js"]
+      "matches": ["*://flight.easemytrip.com/*", "*://*.amazon.in/*"],
+      "js": ["flights.js", "shopping.js"]
     }
-  ]
+  ],
+  "permissions": ["storage"]
 }
