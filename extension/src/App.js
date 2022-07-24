@@ -76,13 +76,16 @@ function App(props) {
 
         getDocs(e).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            setMonthly(Math.floor(doc.data()["emissions"]));
-            console.log(target);
+            let temp = doc.data();
+            console.log(temp)
+            setMonthly(Math.floor(temp["emissions"]));
+            
           });
         });
       }
+      setLoading(false);
     });
-    setLoading(false);
+    
   }, []);
 
   useEffect(() => {
