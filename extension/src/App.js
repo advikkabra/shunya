@@ -25,12 +25,14 @@ import {
   signInWithEmailAndPassword,
   browserLocalPersistence,
 } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-function App() {
+function App(props) {
   const auth = getAuth();
+  const db = props.db;
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,8 +40,8 @@ function App() {
   const [password, setPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const [target, setTarget] = useState(500);
-  const [monthly, setMonthly] = useState(100);
+  const [target, setTarget] = useState(300);
+  const [monthly, setMonthly] = useState(0);
   const [added, setAdded] = useState(0);
 
   const monthNames = [
@@ -62,9 +64,25 @@ function App() {
       if (user) {
         setLoggedIn(true);
         chrome.storage.local.set({ email: user.email }, () => {});
+
+        const monthlyRef = collection(db, "monthly");
+        const now = new Date();
+        const e = query(
+          monthlyRef,
+          where("year", "==", now.getFullYear()),
+          where("month", "==", now.getMonth()),
+          where("email", "==", user.email)
+        );
+
+        getDocs(e).then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            setMonthly(Math.floor(doc.data()["emissions"]));
+            console.log(target);
+          });
+        });
       }
-      setLoading(false);
     });
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -139,7 +157,7 @@ function App() {
               fontWeight="bold"
               fontSize={"4xl"}
             >
-              {monthly}
+              {monthly} <span fontSize="lg">kg</span>
             </Text>
             <Text
               style={{ marginTop: "95px", position: "absolute" }}
@@ -186,7 +204,7 @@ function App() {
             )}
             {added > 0 && (
               <Text color="red.500" fontWeight="medium" fontSize="lg">
-                +{added} CO₂e from purchase
+                +{added} kg CO₂e from purchase
               </Text>
             )}
           </VStack>
