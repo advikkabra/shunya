@@ -8,8 +8,22 @@ if (
   let dests = document.querySelectorAll("[ng-bind=\"l.dest.split('|')[0]\"]");
 
   if (orgs && dests) {
+    let payload = { routes: [] };
     for (let i = 0; i < orgs.length / 2; i++) {
-      console.log(orgs[i].outerText, "-->", dests[i].outerText);
+      //console.log(orgs[i].outerText, "-->", dests[i].outerText);
+      payload.routes.push({
+        from: orgs[i].outerText,
+        to: orgs[i].outerText,
+        passengers: 1,
+      });
     }
+    const checkout = document.getElementById("spnVerifyEmail");
+    checkout.addEventListener("click", (_) => {
+      fetch("http://localhost:5000/api/shopping", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+      });
+    });
   }
 }

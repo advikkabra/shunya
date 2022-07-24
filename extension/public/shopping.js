@@ -46,11 +46,19 @@ if (document.location.href.search("amazon.in") !== -1) {
         checkout.outerText = `Checkout - Emissions: ${Math.floor(
           res["emissions"]
         )} kg`;
+
+        chrome.storage.local.set(
+          { emissions: Math.floor(res["emissions"]) },
+          () => {
+            console.log("done");
+          }
+        );
       });
 
     const checkout = document.querySelector('[name="proceedToRetailCheckout"]');
 
     checkout.addEventListener("click", (_) => {
+      chrome.storage.local.remove(["emissions"]);
       fetch("http://localhost:5000/api/shopping", {
         method: "POST",
         body: JSON.stringify(payload),
