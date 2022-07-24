@@ -31,23 +31,26 @@ const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
-const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: [10, 20, 30, 20, 50, 60, 40],
-      borderColor: "#38B2AC",
-      backgroundColor: '#38B2AC',
-      borderWidth: 3,
-      tension: 0.2
-    },
-    
-  ],
+
+export function Graph(props){
+  const labels = props.months.reverse();
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Dataset 1',
+        data: props.emissions.reverse(),
+        borderColor: "#38B2AC",
+        backgroundColor: '#38B2AC',
+        borderWidth: 3,
+        tension: 0.2
+      },
+      
+    ],
 };
 
-export const Graph = (props) => (
-  <Line options={options} data={data} />
-)
+  return (<Line options={options} data={data} />)
+
+}

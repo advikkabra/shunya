@@ -19,6 +19,11 @@ export default function() {
   const auth = getAuth();
   const db = getFirestore();
   const [email, setEmail] = useState("");
+
+  const [emissions, setEmissions] = useState([200, 200, 250, 250, 120]);
+  const [months, setMonths] = useState(["July 2022", "June 2022", "May 2022", "April 2022", "March 2022"]);
+  const [transactions, setTransactions] = useState([{date: 24, month: 6, year: 2022, emissions: 194, description: "Lenovo laptop 8GB"}])
+
   useEffect(() => {
     
     auth.onAuthStateChanged(function(user) {
@@ -98,25 +103,25 @@ export default function() {
                 <SimpleGrid columns="2" gap="6">
                   
                   <SimpleGrid columns="2" gap="6">
-                    <Progress value={225} target={300} month={"April 2022"}/>
-                    <Progress value={190} target={300} month={"May 2022"}/>
-                    <Progress value={266} target={300} month={"June 2022"}/>
-                    <Progress value={341} target={300} month={"July 2022"}/>
+                    <Progress value={emissions[4]} target={300} month={months[4]}/>
+                    <Progress value={emissions[3]} target={300} month={months[3]}/>
+                    <Progress value={emissions[2]} target={300} month={months[2]}/>
+                    <Progress value={emissions[1]} target={300} month={months[1]}/>
                     
                   </SimpleGrid >
-                  <Progress value={32} target={300} month={"August 2022"} isBig/>
+                  <Progress value={emissions[0]} target={300} month={months[0]} isBig/>
                 </SimpleGrid >
               </Card>
               <Card minH="xs" p="5">
                <Heading size="sm"  mb="4">
                   Emissions over time
                 </Heading>
-                <Graph/>
+                <Graph emissions={emissions} months={months}/>
               </Card>
               
             </SimpleGrid>
           </Stack>
-          <Card minH="sm" p="5"><MemberTable /></Card>
+          <Card minH="sm" p="5"><MemberTable data={transactions}/></Card>
         </Stack>
      
   </Flex>
