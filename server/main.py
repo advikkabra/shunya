@@ -1,6 +1,14 @@
+import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+cred = credentials.Certificate("./key.json")
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +30,19 @@ def get_goods_estimate(item, act_id):
     response = requests.post(estimate, json=payload, headers=headers).json()
     return response
 
+def increment_monthly(emissions):
+    month = datetime.datetime.now().date().month - 1
+    year = datetime.datetime.now().date().year
+
+    monthly_ref = db.collection("monthly").where('month', '==', month).where('year', '==', year).get()
+
+    if monthly_ref:
+        for item in monthly_ref:
+            doc = db.collection("monthly").document(item.id)
+            doc.update({"emissions": firestore.Increment(emissions)})
+    else:
+        db.collection("monthly").add({"month": month, "year": year, "emissions": emissions})
+
 
 @app.route('/')
 def home():
@@ -40,6 +61,19 @@ def post_flightdata():
                 "class": "economy"
             })
         response = requests.post('https://beta3.api.climatiq.io/travel/flights', json=payload, headers=headers).json()
+        
+        for i in range(len(data['routes'])):
+            doc = {
+                'description': f"{data['routes'][i]['from']} --> {data['routes'][i]['to']}",
+                'emissions': response['legs'][i]['co2e'],
+                'date': datetime.datetime.now().date().day,
+                'month': datetime.datetime.now().date().month - 1,
+                'year': datetime.datetime.now().date().year,
+            }
+
+            db.collection('transactions').add(doc)
+            increment_monthly(response['legs'][i]['co2e'])
+
         return jsonify(response)
 
 @app.route("/api/shopping/data", methods=["POST"])
@@ -66,12 +100,25 @@ def shopping():
         data = request.get_json()
 
         for item in data["items"]:
+            response = {}
             if item["category"] == "Shoes & Handbags":
-                pass
+                response = get_goods_estimate(item, "consumer_goods-type_leather_leather_products")
             if item["category"] == "Clothing & Accessories":
-                pass
+                response = get_goods_estimate(item, "consumer_goods-type_clothing")
             if item["category"] == "Computers & Accessories":
-                pass
+                response = get_goods_estimate(item, "electronics-type_computers")
+            doc = {
+                'description': item["title"],
+                'emissions': response['co2e'],
+                'date': datetime.datetime.now().date().day,
+                'month': datetime.datetime.now().date().month - 1,
+                'year': datetime.datetime.now().date().year,
+            }
+
+            db.collection('transactions').add(doc)
+            increment_monthly(response['co2e'])
+
+        return jsonify(data)
 
 
 if __name__ == '__main__':
