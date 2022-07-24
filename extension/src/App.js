@@ -77,26 +77,28 @@ function App(props) {
         getDocs(e).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             let temp = doc.data();
-            
+
             setMonthly(Math.floor(temp["emissions"]));
-            
+            setAdded(0);
+            setTarget(300);
           });
         });
       }
       setLoading(false);
     });
-    
   }, []);
 
   useEffect(() => {
     let em;
     chrome.storage.local.get(["emissions"], (val) => {
-      if (val != null) {
+      if (val !== undefined) {
         em = val.emissions;
-        console.log(em);
-        setAdded(em);
+        if (em !== undefined) {
+          setAdded(em);
+        }
       }
     });
+    console.log(monthly, added, target);
   });
 
   const onLogin = () => {
@@ -160,7 +162,8 @@ function App(props) {
               fontWeight="bold"
               fontSize={"4xl"}
             >
-              {monthly}<span style={{fontSize: 14, fontWeight: 400}}> kg</span>
+              {monthly}
+              <span style={{ fontSize: 14, fontWeight: 400 }}> kg</span>
             </Text>
             <Text
               style={{ marginTop: "95px", position: "absolute" }}
