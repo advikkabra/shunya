@@ -1,4 +1,4 @@
-import { Flex, Stack, Text, Center, Image, Container, Heading, HStack, VStack, Button, SimpleGrid } from '@chakra-ui/react'
+import { Flex, Stack, Text, Center, Image, Container, Heading, HStack, VStack, Button, SimpleGrid, CircularProgress, CircularProgressLabel } from '@chakra-ui/react'
 import Raect, {useState, useEffect} from 'react'
 import {
   FaTree,
@@ -10,7 +10,9 @@ import { getAuth } from "firebase/auth"
 import { getFirestore, collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { Card } from "../components/Card"
 import { NavButton } from '../components/NavButton'
-
+import { Progress } from "../components/Progress"
+import { Graph } from "../components/Graph"
+import { MemberTable } from "../components/MemberTable"
 export default function() { 
 
   const router = useRouter()
@@ -91,13 +93,30 @@ export default function() {
             
           </Stack>
           <Stack spacing={{ base: '5', lg: '6' }}>
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap="6">
-              <Card />
-              <Card />
-              <Card />
+            <SimpleGrid columns={{ base: 1, md: 2 }} gap="6">
+              <Card minH="xs" p="8">
+                <SimpleGrid columns="2" gap="6">
+                  
+                  <SimpleGrid columns="2" gap="6">
+                    <Progress value={225} target={300} month={"April 2022"}/>
+                    <Progress value={190} target={300} month={"May 2022"}/>
+                    <Progress value={266} target={300} month={"June 2022"}/>
+                    <Progress value={341} target={300} month={"July 2022"}/>
+                    
+                  </SimpleGrid >
+                  <Progress value={32} target={300} month={"August 2022"} isBig/>
+                </SimpleGrid >
+              </Card>
+              <Card minH="xs" p="5">
+               <Heading size="sm"  mb="4">
+                  Emissions over time
+                </Heading>
+                <Graph/>
+              </Card>
+              
             </SimpleGrid>
           </Stack>
-          <Card minH="sm" />
+          <Card minH="sm" p="5"><MemberTable /></Card>
         </Stack>
      
   </Flex>
