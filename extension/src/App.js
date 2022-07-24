@@ -160,7 +160,7 @@ function App(props) {
               fontWeight="bold"
               fontSize={"4xl"}
             >
-              {monthly}<span style={{fontSize: 16, fontWeight: 400}}>kg</span>
+              {monthly}<span style={{fontSize: 14, fontWeight: 400}}> kg</span>
             </Text>
             <Text
               style={{ marginTop: "95px", position: "absolute" }}
