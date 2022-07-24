@@ -31,18 +31,26 @@ const options = {
   },
  
 };
+function reverseList (l) {
+    let final = []
 
+    for (let i = l.length - 1; i >= 0; i--){
+      final.push(l[i]);
+    }
+    return final;
+  }
 
 
 export function Graph(props){
-  const labels = props.months;
+  const labels = reverseList(props.months);
+  
 
   const data = {
     labels,
     datasets: [
       {
         label: 'Dataset 1',
-        data: props.emissions,
+        data: reverseList(props.emissions),
         borderColor: "#38B2AC",
         backgroundColor: '#38B2AC',
         borderWidth: 3,

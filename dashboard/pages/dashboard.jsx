@@ -37,22 +37,8 @@ export default function () {
   const [email, setEmail] = useState("");
 
   const [emissions, setEmissions] = useState([0, 0, 0, 0, 0]);
-  const [months, setMonths] = useState([
-    "July 2022",
-    "June 2022",
-    "May 2022",
-    "April 2022",
-    "March 2022",
-  ]);
-  const [transactions, setTransactions] = useState([
-    {
-      date: 24,
-      month: 6,
-      year: 2022,
-      emissions: 194,
-      description: "Lenovo laptop 8GB",
-    },
-  ]);
+  const [months, setMonths] = useState([]);
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     auth.onAuthStateChanged(function (user) {
@@ -178,8 +164,8 @@ export default function () {
                 Emissions over time
               </Heading>
               <Graph
-                emissions={emissions.reverse()}
-                months={months.reverse()}
+                emissions={emissions}
+                months={months}
               />
             </Card>
           </SimpleGrid>
