@@ -152,11 +152,11 @@ def get_dashboard():
             for item in monthly_ref:
                 monthly_data.append(item)
                 
-        monthly_data = sorted(monthly_data, key=lambda x: (x.year * 100 + x.month), reverse=True)
+        monthly_data = sorted(monthly_data, key=lambda x: (x.get("year") * 100 + x.get("month")), reverse=True)
 
         for item in monthly_data:
-            emissions.append(item.emissions)
-            months.append(f"{month_names[item.month]} {item.year}")
+            emissions.append(round(item.get("emissions"), 1))
+            months.append(f'{month_names[item.get("month")]} {item.get("year")}')
 
         transactions_ref = db.collection("transactions").where('email', '==', data["email"]).get()
 
@@ -165,15 +165,15 @@ def get_dashboard():
             for item in transactions_ref:
                 transactions_data.append(item)
                 
-        transactions_data = sorted(transactions_data, key=lambda x: (x.year * 10000 + x.month * 100 + x.date), reverse=True)
+        transactions_data = sorted(transactions_data, key=lambda x: (x.get("year") * 10000 + x.get("month") * 100 + x.get("date")), reverse=True)
 
         for item in transactions_data:
             transactions.append({
-                "date": item.date,
-                "month": item.month,
-                "year": item.year,
-                "description": item.description,
-                "emissions": item.emissions
+                "date": item.get("date"),
+                "month": item.get("month"),
+                "year": item.get("year"),
+                "description": item.get("description"),
+                "emissions": item.get("emissions")
             })
 
 

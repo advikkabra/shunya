@@ -31,6 +31,17 @@ export default function() {
         router.push("/login")
       }
       else {
+        fetch("http://localhost:5000/api/getdashboard", {
+          method: "POST",
+          body: JSON.stringify({email: user.email}),
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((response) => response.json())
+          .then((res) => {
+            setEmissions(res.emissions);
+            setMonths(res.months);
+            setTransactions(res.transactions);
+          });
         setEmail(user.email);
         
       }
