@@ -42,7 +42,7 @@ export const MemberTable = (props) => (
           </Td>
           <Td>
             <Badge size="sm" colorScheme={'green'}>
-              {member.emissions} kg
+              {Math.round(member.emissions)} kg
             </Badge>
           </Td>
           

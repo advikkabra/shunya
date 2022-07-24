@@ -12,8 +12,15 @@ import {
   SimpleGrid,
   CircularProgress,
   CircularProgressLabel,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
-import Raect, { useState, useEffect } from "react";
+import Raect, { useState, useEffect, useDisclosure } from "react";
 import { FaTree, FaCamera, FaPowerOff } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { getAuth } from "firebase/auth";
@@ -39,6 +46,9 @@ export default function () {
   const [emissions, setEmissions] = useState([0, 0, 0, 0, 0]);
   const [months, setMonths] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [loadingDonation, setLoadingDonation] = useState(false);
 
   useEffect(() => {
     auth.onAuthStateChanged(function (user) {
@@ -72,7 +82,54 @@ export default function () {
         console.log(error.message);
       });
   };
+
+  const onDonate = () => {
+    setLoadingDonation(true);
+    fetch("http://localhost:5000/api/offset", {
+          method: "POST",
+          body: JSON.stringify({ email: email, month: (new Date()).getMonth(), year: (new Date()).getFullYear() }),
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((response) => response.json())
+          .then((res) => {
+            setLoadingDonation(false);
+            setIsOpen(false);
+            fetch("http://localhost:5000/api/getdashboard", {
+              method: "POST",
+              body: JSON.stringify({ email: email }),
+              headers: { "Content-Type": "application/json" },
+            })
+              .then((response) => response.json())
+              .then((res) => {
+                setEmissions(res.emissions);
+                setMonths(res.months);
+                setTransactions(res.transactions);
+              });
+          }).catch(e => setLoadingDonation(false));
+  }
   return (
+    <>
+    <Modal size="xl" isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Offset carbon emissions for {months[0]}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text size="lg">Emissions for the month</Text>
+            <Heading size="md" mt="2">{Math.round(emissions[0])} kg of CO₂e</Heading>
+
+            <Text size="lg" mt="4">Number of trees to plant 🌲</Text>
+            <Heading size="md" mt="2">{Math.round(emissions[0]/100)} trees</Heading>
+
+            <Text size="lg" mt="4">Donation Amount</Text>
+            <Heading size="md" mt="2">Rs. {200 * Math.round(emissions[0]/100)}</Heading>
+
+            <Button onClick={onDonate} colorScheme="teal" mt="5" mb="3" w="full" isLoading={loadingDonation} loadingText='Loading'>Donate</Button>
+          </ModalBody>
+
+          
+        </ModalContent>
+      </Modal>
     <Flex as="section" minH="100vh" bg="gray.50">
       <Flex
         flex="1"
@@ -96,7 +153,7 @@ export default function () {
             <Image src="/logo2.png" w="60%" />
 
             <Stack spacing="1">
-              <NavButton label="Offset carbon" icon={FaTree} />
+              <NavButton onClick={() => setIsOpen(true)} label="Offset carbon" icon={FaTree} />
 
               <NavButton
                 onClick={onLogout}
@@ -131,22 +188,22 @@ export default function () {
               <SimpleGrid columns="2" gap="6">
                 <SimpleGrid columns="2" gap="6">
                   <Progress
-                    value={Math.floor(emissions[4])}
+                    value={Math.round(emissions[4])}
                     target={300}
                     month={months[4]}
                   />
                   <Progress
-                    value={Math.floor(emissions[3])}
+                    value={Math.round(emissions[3])}
                     target={300}
                     month={months[3]}
                   />
                   <Progress
-                    value={Math.floor(emissions[2])}
+                    value={Math.round(emissions[2])}
                     target={300}
                     month={months[2]}
                   />
                   <Progress
-                    value={Math.floor(emissions[1])}
+                    value={Math.round(emissions[1])}
                     target={300}
                     month={months[1]}
                   />
@@ -159,7 +216,7 @@ export default function () {
                 />
               </SimpleGrid>
             </Card>
-            <Card minH="xs" p="5">
+            <Card minH="xs" p="6">
               <Heading size="sm" mb="4">
                 Emissions over time
               </Heading>
@@ -170,11 +227,15 @@ export default function () {
             </Card>
           </SimpleGrid>
         </Stack>
-        <Card minH="sm" p="5">
+        <Card minH="sm" p="6">
+        <Heading size="md" mb="6">
+                Transaction history
+              </Heading>
           <MemberTable data={transactions} />
         </Card>
       </Stack>
     </Flex>
+    </>
   );
 }
 

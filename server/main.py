@@ -179,6 +179,18 @@ def get_dashboard():
 
         return jsonify({"emissions": emissions, "months": months, "transactions": transactions})
 
+@app.route('/api/offset', methods=["POST"])
+def offset():
+    if request.method == "POST":
+        data = request.get_json()
+        monthly_ref = db.collection("monthly").where('month', '==', data["month"]).where('year', '==', data["year"]).where('email', '==', data["email"]).get()
+
+        if monthly_ref:
+            for item in monthly_ref:
+                doc = db.collection("monthly").document(item.id)
+                doc.update({"emissions": 0})
+        return jsonify({"status": "success"})
+
 if __name__ == '__main__':
     app.run(debug=True)
 
