@@ -60,8 +60,8 @@ function App() {
   useEffect(() => {
     auth.onAuthStateChanged(function (user) {
       if (user) {
-        let em;
         setLoggedIn(true);
+        chrome.storage.local.set({ email: user.email }, () => {});
       }
       setLoading(false);
     });

@@ -13,16 +13,24 @@ if (
       //console.log(orgs[i].outerText, "-->", dests[i].outerText);
       payload.routes.push({
         from: orgs[i].outerText,
-        to: orgs[i].outerText,
+        to: dests[i].outerText,
         passengers: 1,
       });
     }
     const checkout = document.getElementById("spnVerifyEmail");
     checkout.addEventListener("click", (_) => {
-      fetch("http://localhost:5000/api/shopping", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
+      chrome.storage.local.get(["email"], (value) => {
+        let mail = value.email;
+
+        for (let i = 0; i < payload.routes.length; i++) {
+          payload["routes"][i]["email"] = mail;
+        }
+
+        fetch("http://localhost:5000/api/flights", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+        });
       });
     });
   }

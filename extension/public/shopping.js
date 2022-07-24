@@ -58,11 +58,17 @@ if (document.location.href.search("amazon.in") !== -1) {
     const checkout = document.querySelector('[name="proceedToRetailCheckout"]');
 
     checkout.addEventListener("click", (_) => {
-      chrome.storage.local.remove(["emissions"]);
-      fetch("http://localhost:5000/api/shopping", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
+      chrome.storage.local.get(["email"], (value) => {
+        const mail = value.email;
+        for (let i = 0; i < payload["items"].length; i++) {
+          payload["items"][i]["email"] = mail;
+        }
+        chrome.storage.local.remove(["emissions"]);
+        fetch("http://localhost:5000/api/shopping", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+        });
       });
     });
   }

@@ -30,18 +30,18 @@ def get_goods_estimate(item, act_id):
     response = requests.post(estimate, json=payload, headers=headers).json()
     return response
 
-def increment_monthly(emissions):
+def increment_monthly(emissions, email):
     month = datetime.datetime.now().date().month - 1
     year = datetime.datetime.now().date().year
 
-    monthly_ref = db.collection("monthly").where('month', '==', month).where('year', '==', year).get()
+    monthly_ref = db.collection("monthly").where('month', '==', month).where('year', '==', year).where('email', '==', email).get()
 
     if monthly_ref:
         for item in monthly_ref:
             doc = db.collection("monthly").document(item.id)
             doc.update({"emissions": firestore.Increment(emissions)})
     else:
-        db.collection("monthly").add({"month": month, "year": year, "emissions": emissions})
+        db.collection("monthly").add({"month": month, "year": year, "emissions": emissions, "email":email})
 
 
 @app.route('/')
@@ -69,10 +69,11 @@ def post_flightdata():
                 'date': datetime.datetime.now().date().day,
                 'month': datetime.datetime.now().date().month - 1,
                 'year': datetime.datetime.now().date().year,
+                'email': data['routes'][i]['email']
             }
 
             db.collection('transactions').add(doc)
-            increment_monthly(response['legs'][i]['co2e'])
+            increment_monthly(response['legs'][i]['co2e'], data['routes'][i]['email'])
 
         return jsonify(response)
 
@@ -113,10 +114,11 @@ def shopping():
                 'date': datetime.datetime.now().date().day,
                 'month': datetime.datetime.now().date().month - 1,
                 'year': datetime.datetime.now().date().year,
+                'email': item['email']
             }
 
             db.collection('transactions').add(doc)
-            increment_monthly(response['co2e'])
+            increment_monthly(response['co2e'], item['email'])
 
         return jsonify(data)
 
