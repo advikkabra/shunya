@@ -75,7 +75,7 @@ export default function() {
           
           <Stack spacing="1" >
             <NavButton label="Offset carbon" icon={FaTree} />
-            <NavButton label="Scan bill" icon={FaCamera} aria-current="page" />
+            
             <NavButton onClick={onLogout} label="Log out" icon={FaPowerOff} aria-current="page" />
           </Stack>
         </Stack>
@@ -116,7 +116,7 @@ export default function() {
                <Heading size="sm"  mb="4">
                   Emissions over time
                 </Heading>
-                <Graph emissions={emissions} months={months}/>
+                <Graph emissions={emissions.reverse()} months={months.reverse()}/>
               </Card>
               
             </SimpleGrid>

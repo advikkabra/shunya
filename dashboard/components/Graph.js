@@ -29,19 +29,20 @@ const options = {
     },
     
   },
+ 
 };
 
 
 
 export function Graph(props){
-  const labels = props.months.reverse();
+  const labels = props.months;
 
   const data = {
     labels,
     datasets: [
       {
         label: 'Dataset 1',
-        data: props.emissions.reverse(),
+        data: props.emissions,
         borderColor: "#38B2AC",
         backgroundColor: '#38B2AC',
         borderWidth: 3,
