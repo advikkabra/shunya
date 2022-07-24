@@ -77,7 +77,7 @@ function App(props) {
         getDocs(e).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             let temp = doc.data();
-            console.log(temp)
+            
             setMonthly(Math.floor(temp["emissions"]));
             
           });
@@ -160,7 +160,7 @@ function App(props) {
               fontWeight="bold"
               fontSize={"4xl"}
             >
-              {monthly} <span fontSize="lg">kg</span>
+              {monthly}<span style={{fontSize: 16, fontWeight: 400}}>kg</span>
             </Text>
             <Text
               style={{ marginTop: "95px", position: "absolute" }}
