@@ -122,6 +122,62 @@ def shopping():
 
         return jsonify(data)
 
+@app.route('/api/getdashboard', methods=["POST"])
+def get_dashboard():
+    if request.method == "POST":
+        data = request.get_json()
+        month_names = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ]
+        emissions = []
+        months = []
+        transactions = []
+
+        monthly_ref = db.collection("monthly").where('email', '==', data["email"]).get()
+
+        monthly_data = []
+        
+        if monthly_ref:
+            for item in monthly_ref:
+                monthly_data.append(item)
+                
+        monthly_data = sorted(monthly_data, key=lambda x: (x.year * 100 + x.month), reverse=True)
+
+        for item in monthly_data:
+            emissions.append(item.emissions)
+            months.append(f"{month_names[item.month]} {item.year}")
+
+        transactions_ref = db.collection("transactions").where('email', '==', data["email"]).get()
+
+        transactions_data = []
+        if transactions_ref:
+            for item in transactions_ref:
+                transactions_data.append(item)
+                
+        transactions_data = sorted(transactions_data, key=lambda x: (x.year * 10000 + x.month * 100 + x.date), reverse=True)
+
+        for item in transactions_data:
+            transactions.append({
+                "date": item.date,
+                "month": item.month,
+                "year": item.year,
+                "description": item.description,
+                "emissions": item.emissions
+            })
+
+
+        return jsonify({"emissions": emissions, "months": months, "transactions": transactions})
 
 if __name__ == '__main__':
     app.run(debug=True)
